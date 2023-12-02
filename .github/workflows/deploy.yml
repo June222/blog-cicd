@@ -1,22 +1,30 @@
+
 name: blog cicd
 on:
   push:
     branches:
-      - main
+      - main # main 에 push 될 때만 작동 한다.
 
 # https://github.com/actions/setup-java
 # actions/setup-java@v2는 사용자 정의 배포를 지원하고 Zulu OpenJDK, Eclipse Temurin 및 Adopt OpenJDK를 기본적으로 지원합니다. v1은 Zulu OpenJDK만 지원합니다.
+
+# 깃헙 액션 (공식 문서)
+  # 1. 환경 설정
+    # - OS 설정
+  # 2. jar build
+  # 3. push to ElasticBeanStalk
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3 # 이미지 다운, github action의 버전 ex) checkout@v1 은 jdk 8밖에 못 씀
       - name: Set up JDK 11
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v3 # 이미지 다운,
         with:
           java-version: 11
-          distribution: zulu
+          distribution: zulu # 공식 문서
       - name: Pemission
         run: chmod +x ./gradlew
       - name: Build with Gradle
@@ -35,7 +43,7 @@ jobs:
 
      # EB에 CD 하기 위해 추가 작성
       - name: Generate deployment package
-        run: |
+        run: | # github가 만들어낸 test 서버에서 실해오디는 코드
           mkdir deploy
           cp build/libs/*.jar deploy/application.jar
           cp Procfile deploy/Procfile
